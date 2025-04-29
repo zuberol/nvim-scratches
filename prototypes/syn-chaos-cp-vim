@@ -1,0 +1,119 @@
+" Vim syntax file
+" Language:	chaos
+" Maintainer:	zeauberg
+" Created at:	2024 Apr 07
+
+syntax case match
+
+if exists("b:current_syntax")
+  finish
+endif
+
+let b:current_syntax = "chaos"
+
+hi! chaos.white.colgate guifg=#ffffff
+hi! chaos.orange guifg=#ff4f0f guibg=bg
+hi! chaos.golden guifg=#f4a938 guibg=bg
+hi! chaos.pitch_black guifg=#000000 guibg=bg
+hi! chaos.blue.sky guifg=#59c2ff guibg=bg
+hi! chaos.blue.azure guifg=#3388f8 guibg=bg
+hi! chaos.green.lime guifg=#8af478 guibg=bg
+hi! chaos.red.error guifg=#ff3333 guibg=bg
+hi! chaos.red.rose guifg=#ec3960 guibg=bg
+hi! chaos.pink.rose guifg=#ef83c6 guibg=bg
+hi! chaos.pink.piggy guifg=#ff00ff guibg=bg
+hi! chaos.white.smoke guifg=#b3b1ad guibg=bg
+hi! chaos.grey1 guifg=#3e4b59 guibg=bg
+hi! chaos.grey2 guifg=#0d1016 guibg=bg
+hi! chaos.grey3 guifg=#171b21 guibg=bg
+hi! chaos.grey4 guifg=#404755 guibg=bg
+hi! chaos.grey5 guifg=#626a73 guibg=bg
+hi! def link chaos.grey chaos.grey1
+hi! def link chaos.grey.dark chaos.grey5
+
+hi! def chaos.quote guifg=#b3b1ad gui=italic
+hi! def chaos.quote.single guifg=fg gui=italic
+
+hi! def link chaos.comment 						chaos.grey5
+hi! def link chaos.section 						chaos.pink.rose
+hi! def link chaos.property 					chaos.pink.rose
+hi! def link chaos.property.brace			chaos.golden
+hi! def link chaos.line 							chaos.white.smoke
+hi! def link chaos.block 							chaos.white.smoke
+hi! def link chaos.type								chaos.pink.rose
+hi! def link chaos.type.colon					chaos.golden
+hi! def link chaos.type.meta					chaos.blue.sky
+hi! def link chaos.type.data					chaos.orange
+hi! def link chaos.type.try						chaos.red.rose
+hi! def link chaos.type.workload			chaos.red.rose
+hi! def link chaos.type.opt						chaos.blue.sky
+hi! def link chaos.quote.double				chaos.quote
+hi! def link chaos.quote.escape				chaos.quote
+hi! def link chaos.quote.backtick			chaos.golden
+hi! def link chaos.dump.type					chaos.golden
+hi! def link chaos.dump.block 				chaos.white.smoke
+hi! def link chaos.tag								chaos.blue.azure
+hi! def link chaos.arrow							chaos.golden
+hi! def link chaos.quote.at						chaos.golden
+
+hi! def link chaos.type.sep 		chaos.pink.piggy
+hi! def link chaos.properties 	chaos.golden
+hi! def link chaos.keyword 	chaos.blue.sky
+
+"setlocal iskeyword+=63
+"syn iskeyword @,a-z,A-Z,0-9,-,_,63
+"@-@ <- this is for '@', 63 is '?', 48-57 <- digits
+" this is only for syn highlighting, not even for searching with \k, works
+" only for search in syn patterns
+syntax iskeyword @,48-57,63,-
+
+
+" atoms
+syn match chaos.arrow contained _ \@<=\(\(<-\)\|\(->\)\) \@=_
+syn cluster chaos.quote contains=chaos.quote.single, chaos.quote.double, chaos.quote.backtick, chaos.quote.escape, chaos.quote.at
+syn region chaos.quote.single oneline matchgroup=chaos.golden  contained start=_'_ end=_'_
+syn region chaos.quote.double oneline matchgroup=chaos.golden contained start=_"_ end=_"_
+syn region chaos.quote.backtick oneline matchgroup=chaos.golden contained start=_`_ end=_`_
+syn region chaos.quote.escape oneline matchgroup=chaos.golden contained start=_-''_ end=_''-_ contains=NONE
+syn match chaos.quote.at contained nextgroup=chaos.quote.single _ \@<=@'\@=_
+syn cluster chaos.types contains=chaos.type.meta, chaos.type.data, chaos.type.try, chaos.type.workload
+syn match chaos.keyword _\<\k\+\>_
+syn keyword chaos.type.meta rl rf next bfr oft switch dump fr
+syn keyword chaos.type.data inf i res rs log feedback proposal sn def hint code eg cite reason hmm conclusion problem desc cm data story glossary roadmap ms usage more
+syn keyword chaos.type.try try reading considering research
+syn keyword chaos.type.workload todo read learn conf check impl consider refactor watch write document
+syn match chaos.type keepend _?\?\(\w\+\)\??\?: \@=_ contained contains=@chaos.types
+syn match chaos.type.colon _:_ contained containedin=chaos.type
+syn match chaos.tag contained _ \@<=\#\w\+_
+syn region chaos.property oneline keepend contained  start=_ \@<=\w\+(_  end=_)_ contains=@chaos.types, @chaos.quote, chaos.property.brace nextgroup=chaos.property
+syn match chaos.property.brace contained containedin=chaos.property _[()]_
+syn region chaos.block contained matchgroup=chaos.golden start=_{{\@!_  end=_}}\@!_ contains=chaos.block, chaos.line
+syn region chaos.dump.block matchgroup=chaos.grey start=_{{_  end=_}}$_ contains=NONE
+
+syn match blank _\s_
+
+" compounds
+syn region chaos.comment oneline matchgroup=chaos.golden start=/^#/ end=/$/
+syn region chaos.section oneline contains=chaos.property start=/^\~\{3}/ end=/$/
+syn match chaos.declaration.short _^\s*\w\@=_ nextgroup=@chaos.types, blank, chaos.block
+syn match chaos.declaration.long _^\s*\w\@=_ nextgroup=@chaos.types, chaos.type.sep, chaos.properties, chaos.block
+
+syn match chaos.type.sep contained _:\s_
+
+syn match chaos.properties contained _\<--\>_ nextgroup=chaos.property
+
+
+syn region chaos.line start=_^\s*\k\+:\?_  end=_$\|->\|<-_ contains=chaos.type, @chaos.quote, chaos.property, chaos.dump.block, chaos.block, chaos.arrow, chaos.tag
+
+
+" keep for the ref
+"nested elements inherit parent 'contains', use contains=NONE in child to
+"override it
+" chaos operators
+" @ -> <- : { } {{ }} -'' ''    '..' ".." `..`
+"syn match errorEmptyQuote /""\|''\|``/
+"syn match errorLine /^.*$/chaosGolden
+"syn match chaos.property transparent contained   _\w\+(\w\+)_ contains=@chaos.types
+"syn region chaos.properties oneline contained  start=_\w\+(_  end=_\w)_ contains=chaos.property
+
+"hi! def link chaos.tag.green					
